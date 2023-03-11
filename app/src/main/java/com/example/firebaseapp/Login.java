@@ -1,5 +1,6 @@
 package com.example.firebaseapp;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -48,6 +49,7 @@ public class Login extends AppCompatActivity {
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if(task.isSuccessful()){
                     Toast.makeText(Login.this,"Login Successful",Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(Login.this,AfterLogin.class));
                 }else{
                     Toast.makeText(Login.this,"Login Failed",Toast.LENGTH_SHORT).show();
                 }
