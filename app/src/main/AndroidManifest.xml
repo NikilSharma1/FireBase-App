@@ -23,7 +23,7 @@
         <activity android:name=".Register" />
         <activity android:name=".Login" />
         <activity android:name=".AfterLogin" />
-
+        <activity android:name=".ShowItem" />
     </application>
 
 </manifest>
