@@ -25,48 +25,66 @@ import java.util.ArrayList;
 public class ShowItem extends AppCompatActivity {
     private Button show;
     private RecyclerView recyclerView;
+    private ArrayList<Person> list;
+    private CustomAdapter adapter;
+    public void show(View v){
+        FirebaseUser firebaseUser =FirebaseAuth.getInstance().getCurrentUser();
+        String uid=firebaseUser.getUid();
+        //Toast.makeText(ShowItem.this,uid,Toast.LENGTH_SHORT).show();
+        //URL has to be provided manually as server is not in the USA which is default server location
+        FirebaseDatabase.getInstance("https://fir-app-63625-default-rtdb.europe-west1.firebasedatabase.app").getReference()
+                .child("Person").addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if(snapshot.exists()){
+                            list.clear();
+                            for(DataSnapshot i:snapshot.getChildren()){
+                                //Log.i("info ->>>",i.getValue().toString());
+                                Person person=i.getValue(Person.class);
+                                Log.i("info ->>>",person.getAge()+" "+person.getName());
+                                list.add(new Person(person.getAge(), person.getName()));
 
+                            }
+                            Log.i("info ->>>",list.size()+"");
+                            adapter.notifyDataSetChanged();
+
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+        if (list != null) {
+            Log.i("size of the array2", "" + list.size());
+        } else {
+            Log.i("size of the array2", "" + 0);
+        }
+
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.show_items);
         show=findViewById(R.id.showitembutton);
         recyclerView=findViewById(R.id.itemslistview);
+        recyclerView.setHasFixedSize(true);
+        list=new ArrayList<>();
+        adapter=new CustomAdapter(list);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        show.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ArrayList<Person> list=new ArrayList<>();
+        recyclerView.setAdapter(adapter);
+//                if (list != null) {
+//                    Log.i("size of the array2", "" + list.size());
+//                } else {
+//                    Log.i("size of the array2", "" + 0);
+//                }
+                //int n=list.size();
+                //Log.i("size of the array",""+n);
 
-                FirebaseUser firebaseUser =FirebaseAuth.getInstance().getCurrentUser();
-               String uid=firebaseUser.getUid();
 
-                //Toast.makeText(ShowItem.this,uid,Toast.LENGTH_SHORT).show();
-                FirebaseDatabase.getInstance("https://fir-app-63625-default-rtdb.europe-west1.firebasedatabase.app").getReference()
-                        .child("Person").addValueEventListener(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                if(snapshot.exists()){
-                                    list.clear();
-                                    for(DataSnapshot i:snapshot.getChildren()){
-                                        //Log.i("info ->>>",i.getValue().toString());
-                                        Person person=i.getValue(Person.class);
-                                        Log.i("info ->>>",person.getAge()+" "+person.getName());
-                                        list.add(new Person(person.getAge(), person.getName()));
 
-                                    }
-                                    CustomAdapter adapter=new CustomAdapter(list);
-                                    //adapter.notifyDataSetChanged();
-                                    recyclerView.setAdapter(adapter);
-                                }
-                            }
 
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError error) {
-
-                            }
-                        });
             }
-        });
-    }
 }
+
